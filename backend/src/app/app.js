@@ -6,22 +6,28 @@ import cors from "cors";
 
 const app = express();
 
-const allowedOrigins = [
-    "http://localhost:5173",
-    "https://small-ecomm-project.vercel.app",
-    process.env.CLIENT_URL,
-].filter(Boolean);
-
 app.use(
     cors({
         origin: function (origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
+            // 1. Agar request me origin na ho (Postman, server-to-server) -> Allow
+            if (!origin) return callback(null, true);
+
+            // 2. Localhost allow karo
+            if (origin.includes("localhost")) return callback(null, true);
+
+            // 3. Vercel ka koi bhi URL ho (*.vercel.app) -> Sab allow honge
+            if (origin.endsWith(".vercel.app")) return callback(null, true);
+
+            // 4. CLIENT_URL env variable check
+            if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) {
+                return callback(null, true);
             }
+
+            return callback(new Error("Blocked by CORS policy"));
         },
         credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
