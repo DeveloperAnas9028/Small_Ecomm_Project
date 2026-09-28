@@ -1,22 +1,20 @@
 import axios from "axios";
 
-const BASE_URL="https://small-ecomm-project.onrender.com/api"
+const BASE_URL = "https://small-ecomm-project.onrender.com/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // refreshToken cookie bhejne ke liye
+  withCredentials: true,
 });
 
-// Request Interceptor: Access token attach karne ke liye
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
-  if (token) {
+  if (token && token !== "undefined") {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Response Interceptor: 401 aane par silent token refresh
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -25,15 +23,22 @@ API.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const res = await axios.post(
-          `${BASE_URL}/api/auth/refresh-token`,
+          `${BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
-        const { accessToken } = res.data.data || res.data;
+        const accessToken = res.data.accessToken || res.data.data?.accessToken;
+
+        if (!accessToken) {
+          throw new Error("Token refresh failed");
+        }
+
         localStorage.setItem("accessToken", accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
         return API(originalRequest);
-      } catch (refreshErr) {
+      }
+      catch (refreshErr) {
         localStorage.removeItem("accessToken");
         window.location.href = "/login";
         return Promise.reject(refreshErr);

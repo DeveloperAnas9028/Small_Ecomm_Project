@@ -28,7 +28,7 @@ productRouter.get("/:id", validateProductId, listSingleProductController);
 
 //Update Product API
 productRouter.put("/:id", authenticate, validateProductId, updateProductValidator, updateProductController);
-
+    
 //Delete Product API
 productRouter.delete("/:id", authenticate, validateProductId, deleteProductController);
 

@@ -5,27 +5,22 @@ import toast from "react-hot-toast";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // Global Auth & User Session States
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Register Form States
     const [registerName, setRegisterName] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
     const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
-    // Login Form States
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-    // Validation Errors State
     const [errors, setErrors] = useState({});
     const clearErrors = () => setErrors({});
 
-    // Form Resets
     const resetRegisterForm = () => {
         setRegisterName("");
         setRegisterEmail("");
@@ -41,10 +36,10 @@ export const AuthProvider = ({ children }) => {
         clearErrors();
     };
 
-    // App load hote hi profile check (/auth/me)
     const fetchUser = async () => {
         const token = localStorage.getItem("accessToken");
-        if (!token) {
+        if (!token || token === "undefined") {
+            localStorage.removeItem("accessToken");
             setLoading(false);
             return;
         }
@@ -64,7 +59,6 @@ export const AuthProvider = ({ children }) => {
         fetchUser();
     }, []);
 
-    // Login Handler
     const login = async () => {
         clearErrors();
 
@@ -80,9 +74,16 @@ export const AuthProvider = ({ children }) => {
                 password: loginPassword,
             });
 
-            const { accessToken, user } = res.data.data || res.data;
-            localStorage.setItem("accessToken", accessToken);
-            setUser(user);
+            const token = res.data.accessToken || res.data.data?.accessToken;
+            const userData = res.data.data?.user || res.data.user;
+
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+            if (userData) {
+                setUser(userData);
+            }
+
             toast.success("Logged in successfully!");
             resetLoginForm();
             return true;
@@ -106,7 +107,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Register Handler
     const register = async () => {
         clearErrors();
 
@@ -127,7 +127,6 @@ export const AuthProvider = ({ children }) => {
             resetRegisterForm();
             return true;
         } catch (error) {
-            
             if (error.response?.data?.errors) {
                 const validationMap = {};
                 error.response.data.errors.forEach((err) => {
@@ -147,7 +146,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Logout Handler
     const logout = async () => {
         try {
             await API.post("/auth/logout");
@@ -172,11 +170,9 @@ export const AuthProvider = ({ children }) => {
                 login,
                 register,
                 logout,
-                // Validation error states
                 errors,
                 setErrors,
                 clearErrors,
-                // Register form bindings
                 registerName,
                 setRegisterName,
                 registerEmail,
@@ -186,7 +182,6 @@ export const AuthProvider = ({ children }) => {
                 showRegisterPassword,
                 setShowRegisterPassword,
                 resetRegisterForm,
-                // Login form bindings
                 loginEmail,
                 setLoginEmail,
                 loginPassword,
