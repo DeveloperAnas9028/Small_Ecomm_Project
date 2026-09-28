@@ -2,21 +2,9 @@ import bcrypt from "bcryptjs";
 import authModel from "../models/auth.model.js";
 import { createAccessToken, createRefreshToken, readRefreshToken } from "../utils/auth.utils.js";
 
-
 export async function registerController(req, res) {
+    const { email, name, password } = req.body;
 
-    //Destructuring props from Frontend using "req.body"
-    const { email, name, password, } = req.body;
-
-
-    //Checking id password and confirmPasswords match or not
-    // if (password !== confirmPassword) {
-    //     return res.status(400).json({
-    //         message: "Passwords do not match"
-    //     });
-    // }
-
-    //Checking if any user already exits and returning error message if user with same email address already exists
     const isUserAlreadyExists = await authModel.findOne({
         email
     });
@@ -33,24 +21,20 @@ export async function registerController(req, res) {
         });
     }
 
-    //Creating new user if not already created
     const user = await authModel.create({
         email,
         name,
         passwordHash: await bcrypt.hash(password, 12)
     });
 
-    //Sending successful registration response  
     res.status(201).json({
         message: "User Registered Successfully",
         data: {
             email: user.email,
             name: user.name,
             id: user._id
-        },
-        // accessToken
+        }
     });
-
 }
 
 export async function loginController(req, res) {
@@ -75,7 +59,6 @@ export async function loginController(req, res) {
             });
         }
 
-
         const accessToken = createAccessToken({
             userId: user._id,
         });
@@ -84,20 +67,19 @@ export async function loginController(req, res) {
             userId: user._id,
         });
 
-        //Sending refreshToken into DB
         await authModel.findOneAndUpdate({
             email
         }, {
             refreshToken
         });
 
-
-        //Setting refreshToken into Cookie
         res.cookie("refreshToken", refreshToken, {
-            httpOnly: true
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        //Sending Successful loggedIn message
         res.status(200).json({
             message: "User LoggedIn Successfully",
             data: {
@@ -116,11 +98,9 @@ export async function loginController(req, res) {
             error: error.message
         });
     }
-
 }
 
 export async function refreshController(req, res) {
-
     try {
         const refreshToken = req.cookies?.refreshToken;
 
@@ -141,13 +121,12 @@ export async function refreshController(req, res) {
             });
         }
 
-        //Checking if refresh Token is valid or not
         if (refreshToken != user.refreshToken) {
             await authModel.findByIdAndUpdate(user._id, {
                 refreshToken: null
             });
 
-            return res.status(403).json({ // 403 Forbidden
+            return res.status(403).json({
                 message: "Refresh Token mismatch, please re-login"
             });
         }
@@ -160,7 +139,10 @@ export async function refreshController(req, res) {
         });
 
         res.cookie("refreshToken", newRefreshToken, {
-            httpOnly: true
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         return res.status(200).json({
@@ -198,7 +180,7 @@ export async function getMeController(req, res) {
                     id: user._id
                 }
             }
-        })
+        });
     }
     catch (error) {
         return res.status(500).json({
@@ -206,12 +188,9 @@ export async function getMeController(req, res) {
             error: error.message
         });
     }
-
 }
 
 export async function logoutController(req, res) {
-    const refreshToken = req.cookies.refreshToken;
-
     try {
         const { userId } = req.user;
 
@@ -219,15 +198,15 @@ export async function logoutController(req, res) {
             refreshToken: null
         });
 
-        res.clearCookie('refreshToken', {
-            httpOnly: true
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
         });
 
         return res.status(200).json({
             message: "Logged Out Successfully",
         });
-
-
 
     } catch (error) {
         return res.status(500).json({
