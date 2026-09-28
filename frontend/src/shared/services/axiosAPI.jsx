@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const BASE_URL="https://small-ecomm-project.onrender.com/api"
+
 const API = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: BASE_URL,
   withCredentials: true, // refreshToken cookie bhejne ke liye
 });
 
@@ -23,7 +25,7 @@ API.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const res = await axios.post(
-          "http://localhost:3000/api/auth/refresh-token",
+          `${BASE_URL}/api/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
