@@ -6,10 +6,9 @@ import { useAuth } from "../../auth/context/AuthContext";
 const ProductCard = ({ product, onDelete }) => {
     const { user } = useAuth();
 
-    // Check karo agar logged in user hi is product ka seller hai
-    const isSeller = user && (user._id === product.seller || user.id === product.seller);
+    // Sabhi logged in users ke liye actions enable
+    const canManage = Boolean(user);
 
-    // First image ya default fallback image
     const displayImage = product.images && product.images.length > 0
         ? product.images[0]
         : "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80";
@@ -17,7 +16,6 @@ const ProductCard = ({ product, onDelete }) => {
     return (
         <div className="group bg-white rounded-3xl p-4 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:border-slate-200 transition-all duration-300 flex flex-col justify-between">
 
-            {/* Product Image & Badges */}
             <div>
                 <div className="relative w-full h-52 rounded-2xl overflow-hidden bg-slate-50 mb-4">
                     <img
@@ -29,14 +27,12 @@ const ProductCard = ({ product, onDelete }) => {
                         }}
                     />
 
-                    {/* Category Tag */}
                     <span className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-md rounded-xl text-xs font-semibold text-slate-700 shadow-sm flex items-center gap-1.5">
                         <Tag className="w-3 h-3 text-blue-600" />
                         {product.category || "General"}
                     </span>
 
-                    {/* Seller Action Buttons */}
-                    {isSeller && (
+                    {canManage && (
                         <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
                             <Link
                                 to={`/edit-product/${product._id}`}
@@ -50,6 +46,7 @@ const ProductCard = ({ product, onDelete }) => {
                                     onClick={() => onDelete(product._id)}
                                     className="p-2 rounded-xl bg-white/90 backdrop-blur-md text-slate-700 hover:text-rose-600 hover:bg-white shadow-sm transition-all"
                                     title="Delete Product"
+                                    type="button"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -58,7 +55,6 @@ const ProductCard = ({ product, onDelete }) => {
                     )}
                 </div>
 
-                {/* Title & Description */}
                 <div className="px-1">
                     <h3 className="font-bold text-slate-900 text-base line-clamp-1 group-hover:text-blue-600 transition-colors">
                         {product.title}
@@ -69,7 +65,6 @@ const ProductCard = ({ product, onDelete }) => {
                 </div>
             </div>
 
-            {/* Pricing & CTA */}
             <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between px-1">
                 <div>
                     <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Price</span>

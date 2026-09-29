@@ -10,12 +10,12 @@ const CreateProduct = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
-    //Loads Empty <ProductForm> component 
+    // Default category "Electronics" set kar di hai
     const [formData, setFormData] = useState({
         title: "",
         description: "",
         price: "",
-        category: "",
+        category: "Electronics",
         images: "",
     });
 
@@ -25,7 +25,6 @@ const CreateProduct = () => {
         setIsSubmitting(true);
 
         try {
-            // Backend images array accept karta hai
             const payload = {
                 ...formData,
                 price: Number(formData.price),
@@ -53,7 +52,6 @@ const CreateProduct = () => {
 
     return (
         <div className="max-w-2xl mx-auto py-6 px-4">
-            {/* Back button */}
             <Link
                 to="/"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 mb-6 transition-colors"

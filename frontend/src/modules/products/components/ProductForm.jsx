@@ -1,5 +1,14 @@
 import React from "react";
-import { Tag, DollarSign, Type, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Tag, DollarSign, Type, FileText, Image as ImageIcon, Loader2, ChevronDown } from "lucide-react";
+
+const CATEGORIES = [
+    "Electronics",
+    "Clothing & Apparel",
+    "Footwear",
+    "Home & Kitchen",
+    "Beauty & Personal Care",
+    "Health & Wellness",
+];
 
 const ProductForm = ({
     formData,
@@ -14,7 +23,6 @@ const ProductForm = ({
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
 
-        // Input type karte hi red error clean karna
         if (errors[name] && setErrors) {
             setErrors((prev) => ({ ...prev, [name]: null }));
         }
@@ -38,8 +46,8 @@ const ProductForm = ({
                         value={formData.title}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-inner ${errors.title
-                                ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                                : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                            : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             }`}
                     />
                 </div>
@@ -68,8 +76,8 @@ const ProductForm = ({
                             value={formData.price}
                             onChange={handleChange}
                             className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-inner ${errors.price
-                                    ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                                    : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                                : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                 }`}
                         />
                     </div>
@@ -80,7 +88,7 @@ const ProductForm = ({
                     )}
                 </div>
 
-                {/* Category */}
+                {/* Category Dropdown */}
                 <div>
                     <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">
                         Category
@@ -89,17 +97,27 @@ const ProductForm = ({
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <Tag className="w-4 h-4" />
                         </div>
-                        <input
-                            type="text"
+                        <select
                             name="category"
-                            placeholder="e.g. Electronics"
                             value={formData.category}
                             onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-inner ${errors.category
-                                    ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                                    : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            className={`w-full pl-10 pr-10 py-2.5 bg-slate-50 border rounded-2xl text-sm text-slate-800 focus:outline-none transition-all shadow-inner appearance-none cursor-pointer ${errors.category
+                                ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                                : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                                 }`}
-                        />
+                        >
+                            <option value="" disabled>
+                                Select Category
+                            </option>
+                            {CATEGORIES.map((cat) => (
+                                <option key={cat} value={cat}>
+                                    {cat}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            <ChevronDown className="w-4 h-4" />
+                        </div>
                     </div>
                     {errors.category && (
                         <p className="text-xs font-medium text-rose-500 mt-1.5 ml-1 animate-in fade-in duration-150">
@@ -125,8 +143,8 @@ const ProductForm = ({
                         value={formData.images}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-inner ${errors.images
-                                ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                                : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                            : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             }`}
                     />
                 </div>
@@ -150,8 +168,8 @@ const ProductForm = ({
                         value={formData.description}
                         onChange={handleChange}
                         className={`w-full p-4 bg-slate-50 border rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-inner ${errors.description
-                                ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                                : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            ? "border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                            : "border-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             }`}
                     />
                 </div>

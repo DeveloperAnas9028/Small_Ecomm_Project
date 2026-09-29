@@ -17,11 +17,10 @@ const EditProduct = () => {
         title: "",
         description: "",
         price: "",
-        category: "",
+        category: "Electronics",
         images: "",
     });
 
-    // Existing product fetch karna
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -32,7 +31,7 @@ const EditProduct = () => {
                     title: product.title || "",
                     description: product.description || "",
                     price: product.price || "",
-                    category: product.category || "",
+                    category: product.category || "Electronics",
                     images: Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : "",
                 });
             } catch (error) {
@@ -87,7 +86,6 @@ const EditProduct = () => {
 
     return (
         <div className="max-w-2xl mx-auto py-6 px-4">
-            {/* Back button */}
             <Link
                 to={`/products/${id}`}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 mb-6 transition-colors"

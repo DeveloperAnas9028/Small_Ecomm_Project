@@ -130,7 +130,9 @@ const Login = () => {
                         )}
                     </button>
                 </form>
-
+                <br />
+                <h3>For Editing product use 
+                    <br />email:seller@gmail.com and password:pass123#</h3>
                 {/* Switch to Register */}
                 <div className="mt-6 text-center">
                     <p className="text-sm text-slate-500">
